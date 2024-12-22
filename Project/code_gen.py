@@ -1,4 +1,4 @@
-import random as r
+import secrets as s
 
 class CodeGenerator:
 
@@ -14,8 +14,4 @@ class CodeGenerator:
     returns: the generated one time password
     '''
     def generate_code(self):
-        otp = ""
-        for i in range(0, 6):
-            otp += str(r.randint(0, 9))
-
-        return int(otp)
+        return "".join(str(s.randbelow(9)) for i in range(0, 6))
