@@ -1,7 +1,9 @@
+import secrets
 import secrets as s
 import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import time as t
 
 class CodeGenerator:
 
@@ -22,15 +24,21 @@ class CodeGenerator:
 
 class EmailOTP:
     def __init__(self):
-        pass
+        self.__otp = None
 
 
-    def generate_email(self):
+    def generate_otp(self):
+        self.__otp = CodeGenerator().generate_code()
+        return self.__otp
+
+    def get_otp(self):
+        return self.__otp
+
+
+    def generate_email(self, receiver_email, password):
         # variables to easily change values
-        otp = CodeGenerator().generate_code()
+        otp = self.generate_otp()
         sender_email = ""
-        receiver_email = ""
-        password = ""
 
         message = MIMEMultipart("alternative")
         message["Subject"] = "multipart test"
@@ -42,14 +50,22 @@ class EmailOTP:
         How are you?
         Real Python has many great tutorials:
         www.realpython.com"""
-        html = """\
+
+        # this is random chatgpt html, replace later with html that I made myself
+        html = f"""  
         <html>
-          <body>
-            <p>Hi,<br>
-               How are you?<br>
-               <a href="http://www.realpython.com">Real Python</a> 
-               has many great tutorials.
-            </p>
+          <body style="font-family: Arial, sans-serif; line-height: 1.5; color: #333; margin: 0; padding: 0;">
+            <table align="center" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; background-color: #ffffff;">
+              <tr>
+                <td style="padding: 10px; text-align: left;">
+                  <p style="margin: 0; font-size: 16px; color: #333;">
+                     Hi,<br><br>
+                     How are you?<br><br>
+                     Your OTP is: <strong style="font-size: 18px; color: #000;">{otp}</strong><br><br>
+                  </p>
+                </td>
+              </tr>
+            </table>
           </body>
         </html>
         """
@@ -71,5 +87,15 @@ class EmailOTP:
 
 
 
-test = EmailOTP()
-test.generate_email()
+
+# testing basic application functionality
+email_otp = EmailOTP()
+user_email = str(input("Enter your email: "))
+start_time = t.time()
+email_otp.generate_email(user_email)
+user_otp = str(input("Enter your OTP that was sent to your email: "))
+end_time = t.time()
+print(end_time - start_time)
+if email_otp.get_otp() == user_otp and end_time - start_time < 30:
+    print("entry confirmed, welcome!")
+
