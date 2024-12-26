@@ -1,9 +1,8 @@
-import secrets
 import secrets as s
 import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import time as t
+import time
 
 class CodeGenerator:
 
@@ -27,7 +26,7 @@ class EmailOTP:
         self.__otp = None
 
 
-    def generate_otp(self):
+    def __generate_otp(self): # double underscore to indicate that this method is private
         self.__otp = CodeGenerator().generate_code()
         return self.__otp
 
@@ -85,17 +84,33 @@ class EmailOTP:
             server.login(sender_email, password)
             server.sendmail(sender_email, receiver_email, message.as_string())
 
+class AccountStorage:
+    def __init__(self):
+        self.generator = EmailOTP()
+        self.accounts = []
+        self.start_time = None
+        self.end_time = None
 
+    def add_account(self, email, password):
+        self.accounts.append({"email": email, "password": password})
+        print(self.accounts)
 
+    def get_email(self, email):
+        return self.accounts[email]["email"]
 
-# testing basic application functionality
-email_otp = EmailOTP()
-user_email = str(input("Enter your email: "))
-start_time = t.time()
-email_otp.generate_email(user_email)
-user_otp = str(input("Enter your OTP that was sent to your email: "))
-end_time = t.time()
-print(end_time - start_time)
-if email_otp.get_otp() == user_otp and end_time - start_time < 30:
-    print("entry confirmed, welcome!")
+    def get_password(self, email):
+        return self.accounts[email]["password"]
+
+    def send_otp_code(self, email, password):
+        self.generator.generate_email(email, password)
+        self.start_time = time.time()
+
+    def verify_otp_code(self, inputted_code):
+        self.end_time = time.time()
+        time_diff = self.end_time - self.start_time
+        if time_diff < 60 and inputted_code == self.generator.get_otp():
+            return True
+        else:
+            return False
+
 
