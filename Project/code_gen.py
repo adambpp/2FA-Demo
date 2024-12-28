@@ -44,29 +44,30 @@ class EmailOTP:
         message["From"] = sender_email
         message["To"] = receiver_email
 
-        text = """\
+        text = f"""\
         Hi,
-        How are you?
-        Real Python has many great tutorials:
-        www.realpython.com"""
+        Below is your 6-digit code you need to sign in:
+        {otp}"""
 
-        # this is random chatgpt html, replace later with html that I made myself
         html = f"""  
-        <html>
-          <body style="font-family: Arial, sans-serif; line-height: 1.5; color: #333; margin: 0; padding: 0;">
-            <table align="center" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; background-color: #ffffff;">
-              <tr>
-                <td style="padding: 10px; text-align: left;">
-                  <p style="margin: 0; font-size: 16px; color: #333;">
-                     Hi,<br><br>
-                     How are you?<br><br>
-                     Your OTP is: <strong style="font-size: 18px; color: #000;">{otp}</strong><br><br>
-                  </p>
-                </td>
-              </tr>
-            </table>
-          </body>
-        </html>
+         <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.5; color: #333; margin: 0; padding: 0">
+              <table align="center" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; background-color: #ffffff;">
+                <tr>
+                  <td style="padding: 10px; text-align: left;">
+                    <p align="center" style="margin: 0; font-size: 16px; color: #333;">
+                       Hi,<br><br>
+                       Below is your 6-digit code you need to sign in:<br><br>
+                    </p>
+                    <div align="center" style="margin: 0 auto; max-width: 300px; border-radius: 15px; background-color: lightgrey; padding: 10px; padding-bottom: 0;">
+                        <strong style="letter-spacing: 10px; font-size: 50px; color: #000;">{otp}</strong><br><br>
+                    </div>
+                    <p align="center">This code is valid for <strong>60 seconds</strong></p>
+                  </td>
+                </tr>
+              </table>
+            </body>
+          </html>
         """
 
         # turn the messages into plain/html MIMEText objects
