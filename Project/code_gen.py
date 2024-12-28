@@ -36,7 +36,7 @@ class EmailOTP:
 
     def generate_email(self, receiver_email, password):
         # variables to easily change values
-        otp = self.generate_otp()
+        otp = self.__generate_otp()
         sender_email = ""
 
         message = MIMEMultipart("alternative")
@@ -112,5 +112,3 @@ class AccountStorage:
             return True
         else:
             return False
-
-
