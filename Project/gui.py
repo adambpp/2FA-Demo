@@ -2,9 +2,13 @@ import customtkinter
 
 from Project.code_gen import AccountStorage
 
-
+'''
+This class is responsible for building the UI and handling user inputs. Each UI section could probably be contained
+within a method for cleaner code and better readability, but for now I will leave it as is.
+'''
 class Application(customtkinter.CTk):
 
+    # constructor
     def __init__(self):
         super().__init__()
         self.geometry("400x500")
@@ -25,6 +29,9 @@ class Application(customtkinter.CTk):
 
         self.new_password = customtkinter.CTkEntry(master=self.login_screen, placeholder_text="Password", show="*")
         self.new_password.pack(pady=12, padx=10)
+
+        self.invalid_login_label = customtkinter.CTkLabel(master=self.login_screen, text="", font=("Arial", 12), text_color="red")
+        self.invalid_login_label.pack()
 
         self.login_button = customtkinter.CTkButton(master=self.login_screen, text="Create Account", command=self.login_button_callback)
         self.login_button.pack(pady=12, padx=10, expand=True)
@@ -60,25 +67,37 @@ class Application(customtkinter.CTk):
         self.welcome_label.pack(pady=12, padx=10, fill="both", expand=True)
 
 
+    '''
+    Callback method for the 'Create Account' button on the login screen. When clicked this method will
+    add the inputted email and password to the database as an account and then send out a OTP to the users email.
+    Changes the the next screen only if the email was successfully sent.
+    '''
     def login_button_callback(self):
         self.acc_database.add_account(self.new_email.get(), self.new_password.get())
         if self.acc_database.send_otp_code(self.new_email.get(), self.new_password.get()) == -1:
-            print("Login failed")
-        self.login_screen.pack_forget()
-        self.otp_screen.pack(pady=20, padx=10, ipadx=100, ipady=50, expand=True)
+            self.invalid_login_label.configure(text="Invalid E-mail and/or Password")
+        else:
+            self.invalid_login_label.configure(text="")
+            self.login_screen.pack_forget()
+            self.otp_screen.pack(pady=20, padx=10, ipadx=100, ipady=50, expand=True)
 
+    '''
+    Callback method for the 'Submit' button on the code verification screen. When clicked this method will
+    check if the inputted code is valid.
+    '''
     def otp_button_callback(self):
         code_verification = self.acc_database.verify_otp_code(self.otp_entry.get())
         if code_verification:
             self.invalid_label.configure(text="")
             self.otp_screen.pack_forget()
             self.main_system_screen.pack(pady=20, padx=10, ipadx=100, ipady=50, fill="both", expand=True)
-            print("SUCCESS")
         else:
             self.invalid_label.configure(text="Invalid Code")
-            print("FAILURE")
 
-
+    '''
+    Checks to see if each character that gets inputed into the OTP entry box is valid. Valid meaning that the total
+    amount of characters is less than 6 and that the characters are only digits. 
+    '''
     def input_validation(self, text_if_allowed):
         # case for when there is only one char left which is needed or else it can't be deleted
         if len(text_if_allowed) == 0:
