@@ -62,7 +62,8 @@ class Application(customtkinter.CTk):
 
     def login_button_callback(self):
         self.acc_database.add_account(self.new_email.get(), self.new_password.get())
-        self.acc_database.send_otp_code(self.new_email.get(), self.new_password.get())
+        if self.acc_database.send_otp_code(self.new_email.get(), self.new_password.get()) == -1:
+            print("Login failed")
         self.login_screen.pack_forget()
         self.otp_screen.pack(pady=20, padx=10, ipadx=100, ipady=50, expand=True)
 

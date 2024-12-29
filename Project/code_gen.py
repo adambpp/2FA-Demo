@@ -81,9 +81,12 @@ class EmailOTP:
 
         # create a secure connection with server and send email
         context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email, message.as_string())
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+                server.login(sender_email, password)
+                server.sendmail(sender_email, receiver_email, message.as_string())
+        except Exception as e:
+            return -1
 
 class AccountStorage:
     def __init__(self):
@@ -103,7 +106,8 @@ class AccountStorage:
         return self.accounts[email]["password"]
 
     def send_otp_code(self, email, password):
-        self.generator.generate_email(email, password)
+        if self.generator.generate_email(email, password) == -1:
+            return -1
         self.start_time = time.time()
 
     def verify_otp_code(self, inputted_code):
@@ -113,3 +117,6 @@ class AccountStorage:
             return True
         else:
             return False
+
+
+
